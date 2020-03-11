@@ -1,5 +1,6 @@
-FROM debian:jessie
+FROM debian:buster
 MAINTAINER Jan Suchotzki <jan@suchotzki.de>
+MAINTAINER southern-dust <southerndust972106614@gmail.com>
 
 # first create user and group for all the X Window stuff
 # required to do this first so we have consistent uid/gid between server and client container
@@ -16,12 +17,13 @@ RUN addgroup --system xusers \
 # Install packages required for connecting against X Server
 RUN apt-get update && apt-get install -y --no-install-recommends \
 				xauth \
+				xfonts-wqy \
 		&& rm -rf /var/lib/apt/lists/*
 
 # Before switching user, root needs to ensure that entrypoint can be executed.
 COPY docker-entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
-
+RUN echo "source /entrypoint.sh" >> /etc/profile
 # During startup we need to prepare connection to X11-Server container
 USER xclient
 ENTRYPOINT ["/entrypoint.sh"]
